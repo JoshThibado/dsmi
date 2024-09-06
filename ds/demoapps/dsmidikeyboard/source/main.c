@@ -223,11 +223,65 @@ void VblankHandler(void)
 	u16 keysdown = keysDown();
 	u16 keysup = keysUp();
 	u16 keysheld = keysHeld();
-	
+
 	touchPosition touch;
 	touchRead(&touch);
 	
-	if(!touch_was_down && keysdown & KEY_TOUCH) {
+	if(!pianoIsInserted()) {
+		pianoScanKeys();
+		u16 pianoKeysH = pianoKeysHeld();
+
+		u8 note;
+		if (pianoKeysH == 6145) {
+			note = 0;
+		}
+		else if (pianoKeysH == 6146) {
+			note = 1;
+		}
+		else if (pianoKeysH == 6148) {
+			note = 2;
+		}
+		else if (pianoKeysH == 6152) {
+			note = 3;
+		}
+		else if (pianoKeysH == 6160) {
+			note = 4;
+		}
+		else if (pianoKeysH == 6176) {
+			note = 5;
+		}
+		else if (pianoKeysH == 6208) {
+			note = 6;
+		}
+		else if (pianoKeysH == 6272) {
+			note = 7;
+		}
+		else if (pianoKeysH == 6400) {
+			note = 8;
+		}
+		else if (pianoKeysH == 6656) {
+			note = 9;
+		}
+		else if (pianoKeysH == 7168) {
+			note = 10;
+		}
+		else if (pianoKeysH == 14336) {
+			note = 11;
+		}
+		else if (pianoKeysH == 22528) {
+			note = 12;
+		}
+		currnote = note + 12*baseOctave;
+		lastnote = note;
+		setKeyPal(note);
+		
+		// Play the note
+		if(pianoKeysH > 6144) {
+			stop(lastnote);
+			play(note);
+		}
+	}
+	else if(!touch_was_down && keysdown & KEY_TOUCH) {
 		touch_was_down = 1;
 		
 		pm_x0 = touch.px;
